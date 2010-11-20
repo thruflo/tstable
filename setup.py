@@ -25,11 +25,12 @@ setup(
     include_package_data = True,
     zip_safe = False,
     install_requires = [
+        'setuptools_git==0.3.4',
         'nose==0.11.2',
         'coverage==3.4',
-        'setuptools_git==0.3.4',
-        'gunicorn==0.11.2', #'>=0.9.1',
+        'gunicorn==0.11.2',
         'PasteScript==1.7.3',
+        'SQLAlchemy==0.6.5',
         'zope.interface==3.6.1',
         'zope.component==3.10.0'
     ],
@@ -38,7 +39,7 @@ setup(
             "foobar = setuptools_git:gitlsfiles"
         ],
         'paste.app_factory': [
-            'main=testable.main:app_factory'
+            'main=tstable.main:app_factory'
         ]
     }
 )
