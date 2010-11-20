@@ -1,0 +1,1 @@
+Playing around with testable code, inspired by http://googletesting.blogspot.com/2008/08/by-miko-hevery-so-you-decided-to.html

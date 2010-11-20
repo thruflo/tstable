@@ -4,12 +4,12 @@
 """
 """
 
-from zope.interface.interface import Interface, Attribute, Method
-
 __all__ = [
     'IUserDetails', 'IUserCredentials', 'IUser',
     'IAuthenticator', 'ISQLAlchemySession'
 ]
+
+from zope.interface.interface import Interface, Attribute, Method
 
 class IUserDetails(Interface):
     """

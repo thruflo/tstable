@@ -19,7 +19,7 @@ from model import userFactory, UserAuthenticator, SQLiteSQLAlchemySession
 from interfaces import ISQLAlchemySession
 
 # from urls import mapping
-mapping = [] 
+mapping = []
 
 def app_factory(global_config, **local_conf):
     """

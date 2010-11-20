@@ -28,6 +28,7 @@ setup(
         'setuptools_git==0.3.4',
         'nose==0.11.2',
         'coverage==3.4',
+        'mock==0.7.0b4',
         'gunicorn==0.11.2',
         'PasteScript==1.7.3',
         'SQLAlchemy==0.6.5',

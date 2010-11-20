@@ -4,6 +4,11 @@
 """
 """
 
+__all__ = [
+    'User', 'userFactory', 'UserAuthenticator', 
+    'SQLiteSQLAlchemySession'
+]
+
 import hashlib
 
 from zope.interface import implements
@@ -42,8 +47,8 @@ class User(SQLModel):
     def public_key(self):
         if self.password is None:
             return None
-        elif not self.hasattr('_public_key'):
-            self._public_key = hashlib.md5(self.password)
+        elif not hasattr(self, '_public_key'):
+            self._public_key = hashlib.md5(self.password).hexdigest()
         return self._public_key
         
     
@@ -81,16 +86,14 @@ class UserAuthenticator(object):
         
     
     
-    @classmethod
     def authenticate(self, username=None, password=None, public_key=None):
+        query = self.session.query(self.context)
         if username is not None and password is not None:
-            params = dict(username=username, password=password)
+            query.filter_by(username=username, password=password)
         elif public_key is not None:
-            params = dict(public_key=public_key)
+            query.filter_by(public_key=public_key)
         else:
             raise ValueError(u'Provide `username` & `password` or `public_key`')
-        query = self.session.query(self.context)
-        query.filter_by(**params)
         return query.first()
         
     

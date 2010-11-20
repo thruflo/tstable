@@ -1,1 +1,0 @@
-Playing around with testable code using zope.component.
