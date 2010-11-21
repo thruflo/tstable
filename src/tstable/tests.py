@@ -7,6 +7,8 @@
 import unittest
 from mock import Mock
 
+from zope.component import getGlobalSiteManager
+
 from interfaces import *
 from model import *
 
@@ -15,13 +17,7 @@ class TestUser(unittest.TestCase):
     """
     
     def setUp(self):
-        self.user = User(
-            first_name=u'James', 
-            last_name=u'Arthur',
-            email=u'thruflo@geemail.com',
-            username=u'thruflo',
-            password=u'...'
-        )
+        self.user = User(password=u'...')
         
     
     
@@ -30,7 +26,6 @@ class TestUser(unittest.TestCase):
         pwd = self.user.password
         self.user.password = None
         self.assertTrue(self.user.public_key is None)
-        self.user.password = pwd
         
     
     
@@ -84,6 +79,39 @@ class TestAuthenticate(unittest.TestCase):
     
 
 
+class TestIntegration(unittest.TestCase):
+    
+    def setUp(self):
+        gsm = getGlobalSiteManager()
+        self.user = User(username=u'foo', password=u'...')
+        self.db = gsm.getUtility(ISQLAlchemySession)
+        self.db.add(self.user)
+        #try:
+        #    self.db.commit()
+        #except IntegrityError, err:
+        #    logging.err(err)
+        #    self.db.rollback()
+        self.authenticator = UserAuthenticator(User, self.db)
+        
+    
+    
+    def test_successful_username_password_authenticate(self):
+        result = self.authenticator.authenticate(
+            username=u'thruflo', 
+            password=u'wrong'
+        )
+        self.assertTrue(result.username == self.user.username)
+        
+        # raise NotImplementedError('this test current works regardless')
+        
+    
+    
+    def tearDown(self):
+        self.db.delete(self.user)
+        
+    
+    
+
+
 if __name__ == '__main__':
     unittest.main()
-
