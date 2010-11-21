@@ -27,7 +27,34 @@ SQLModel = declarative_base()
 from interfaces import *
 
 class User(SQLModel):
-    """
+    """ A user.  Can be instantiated with property values
+      as keyword arguments::
+      
+          >>> user = User(first_name=u'James')
+          >>> user.first_name
+          u'James'
+      
+      Public key is derived from password.  Specifically, it's `None`
+      if the password is `None`::
+      
+          >>> user.password = None
+          >>> user.public_key
+      
+      And a `sha1` hash of the `password`::
+          
+          >>> user = User(password=u'...')
+          >>> user.public_key
+          '6eae3a5b062c6d0d79f070c26e6d62486b40cb46'
+      
+      As long as password is a `basestring`::
+      
+          >>> user.password = 0
+          >>> user.public_key #doctest: +NORMALIZE_WHITESPACE
+          Traceback (most recent call last):
+          ...
+          ValueError: password must be a basestring
+          
+      
     """
     
     implements(IUser)
@@ -47,8 +74,10 @@ class User(SQLModel):
     def public_key(self):
         if self.password is None:
             return None
+        elif not isinstance(self.password, basestring):
+            raise ValueError('password must be a basestring')
         elif not hasattr(self, '_public_key'):
-            self._public_key = hashlib.md5(self.password).hexdigest()
+            self._public_key = hashlib.sha1(self.password).hexdigest()
         return self._public_key
         
     

@@ -40,7 +40,7 @@ setup(
             "foobar = setuptools_git:gitlsfiles"
         ],
         'paste.app_factory': [
-            'main=tstable.main:app_factory'
+            'main = tstable.main:app_factory'
         ]
     }
 )

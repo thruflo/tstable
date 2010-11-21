@@ -7,29 +7,8 @@
 import unittest
 from mock import Mock
 
-from zope.component import getGlobalSiteManager
-
 from interfaces import *
 from model import *
-
-class TestUser(unittest.TestCase):
-    """
-    """
-    
-    def setUp(self):
-        self.user = User(password=u'...')
-        
-    
-    
-    def test_public_key(self):
-        self.assertTrue(self.user.public_key == '2f43b42fd833d1e77420a8dae7419000')
-        pwd = self.user.password
-        self.user.password = None
-        self.assertTrue(self.user.public_key is None)
-        
-    
-    
-
 
 class TestAuthenticate(unittest.TestCase):
     """
@@ -82,9 +61,14 @@ class TestAuthenticate(unittest.TestCase):
 class TestIntegration(unittest.TestCase):
     
     def setUp(self):
-        gsm = getGlobalSiteManager()
-        self.user = User(username=u'foo', password=u'...')
+        """
+        """
+        
+        from bootstrap import _bootstrap_integration_test
+        gsm = _bootstrap_integration_test()
+        
         self.db = gsm.getUtility(ISQLAlchemySession)
+        self.user = User(username=u'james', password=u'...')
         self.db.add(self.user)
         #try:
         #    self.db.commit()
@@ -100,9 +84,8 @@ class TestIntegration(unittest.TestCase):
             username=u'thruflo', 
             password=u'wrong'
         )
+        raise Exception('false positive! {}'.format(result.username))
         self.assertTrue(result.username == self.user.username)
-        
-        # raise NotImplementedError('this test current works regardless')
         
     
     
