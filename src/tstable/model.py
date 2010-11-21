@@ -15,7 +15,7 @@ from zope.interface import implements
 from zope.component import adapts
 from zope.component.factory import Factory
 
-from sqlalchemy import create_engine, desc, func
+from sqlalchemy import create_engine, desc, func, and_
 from sqlalchemy import Table, Column, MetaData, ForeignKey
 from sqlalchemy import Boolean, Date, Integer, PickleType, Unicode, UnicodeText
 from sqlalchemy.orm import relation, synonym
@@ -118,9 +118,10 @@ class UserAuthenticator(object):
     def authenticate(self, username=None, password=None, public_key=None):
         query = self.session.query(self.context)
         if username is not None and password is not None:
-            query.filter_by(username=username, password=password)
+            query = query.filter_by(username=username, password=password)
+            print query
         elif public_key is not None:
-            query.filter_by(public_key=public_key)
+            query = query.filter_by(public_key=public_key)
         else:
             raise ValueError(u'Provide `username` & `password` or `public_key`')
         return query.first()

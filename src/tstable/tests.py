@@ -7,6 +7,10 @@
 import unittest
 from mock import Mock
 
+from zope.component import getGlobalSiteManager
+
+from bootstrap import setup_integration_test, teardown_integration_test
+
 from interfaces import *
 from model import *
 
@@ -34,7 +38,6 @@ class TestAuthenticate(unittest.TestCase):
         )
         
     
-    
     def test_public_key_authenticate(self):
         self.authenticator.authenticate(
             public_key='2f43b42fd833d1e77420a8dae7419000'
@@ -46,35 +49,62 @@ class TestAuthenticate(unittest.TestCase):
         
     
     
-    def test_authenticate_invalid_credentials(self):
-        with self.assertRaises(ValueError):
-            self.authenticator.authenticate()
-        with self.assertRaises(ValueError):
-            self.authenticator.authenticate(username=u'thruflo')
-        with self.assertRaises(ValueError):
-            self.authenticator.authenticate(password=u'thruflo')
+    def test_authenticate_no_credentials(self):
+        """ Must provide some credentials.
+        """
+        
+        self.assertRaises(
+            ValueError, 
+            self.authenticator.authenticate
+        )
+        
+    
+    def test_authenticate_random_credentials(self):
+        """ Must provide some credentials.
+        """
+        
+        self.assertRaises(
+            TypeError, 
+            self.authenticator.authenticate,
+            foo='bar'
+        )
+        
+    
+    def test_authenticate_just_username(self):
+        """ Can't just provide a username.
+        """
+        
+        self.assertRaises(
+            ValueError, 
+            self.authenticator.authenticate, 
+            username=u'thruflo'
+        )
+        
+    
+    def test_authenticate_just_password(self):
+        """ Can't just provide a password.
+        """
+        
+        self.assertRaises(
+            ValueError, 
+            self.authenticator.authenticate, 
+            password=u'thruflo'
+        )
         
     
     
 
 
 class TestIntegration(unittest.TestCase):
+    """
+    """
     
     def setUp(self):
-        """
-        """
-        
-        from bootstrap import _bootstrap_integration_test
-        gsm = _bootstrap_integration_test()
-        
+        setup_integration_test()
+        gsm = getGlobalSiteManager()
         self.db = gsm.getUtility(ISQLAlchemySession)
-        self.user = User(username=u'james', password=u'...')
+        self.user = User(username=u'thruflo', password=u'secret')
         self.db.add(self.user)
-        #try:
-        #    self.db.commit()
-        #except IntegrityError, err:
-        #    logging.err(err)
-        #    self.db.rollback()
         self.authenticator = UserAuthenticator(User, self.db)
         
     
@@ -82,15 +112,22 @@ class TestIntegration(unittest.TestCase):
     def test_successful_username_password_authenticate(self):
         result = self.authenticator.authenticate(
             username=u'thruflo', 
+            password=u'secret'
+        )
+        self.assertTrue(result.username == self.user.username)
+        
+    
+    def test_unsuccessful_username_password_authenticate(self):
+        result = self.authenticator.authenticate(
+            username=u'thruflo', 
             password=u'wrong'
         )
-        raise Exception('false positive! {}'.format(result.username))
-        self.assertTrue(result.username == self.user.username)
+        self.assertTrue(result is None)
         
     
     
     def tearDown(self):
-        self.db.delete(self.user)
+        teardown_integration_test()
         
     
     

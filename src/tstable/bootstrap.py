@@ -18,18 +18,21 @@ TEST_SETTINGS = {
     'sqlite_path': 'sqlite:///:memory:'
 }
 
-def _bootstrap_integration_test():
+def setup_integration_test():
     """
     """
     
     bootstrapper = Bootstrapper(settings=TEST_SETTINGS)
     bootstrapper.setup_components()
     
+
+def teardown_integration_test():
+    """
+    """
+    
     gsm = getGlobalSiteManager()
     session = gsm.getUtility(ISQLAlchemySession)
-    session.expunge_all()
-    
-    return gsm
+    session.close()
     
 
 
@@ -70,7 +73,4 @@ class Bootstrapper(object):
         
     
     
-
-
-
 
