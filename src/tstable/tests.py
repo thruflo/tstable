@@ -60,7 +60,7 @@ class TestAuthenticate(unittest.TestCase):
         
     
     def test_authenticate_random_credentials(self):
-        """ Must provide some credentials.
+        """ Can't provide random credentials.
         """
         
         self.assertRaises(
@@ -109,7 +109,10 @@ class TestIntegration(unittest.TestCase):
         
     
     
-    def test_successful_username_password_authenticate(self):
+    def test_success(self):
+        """ Authenticating successfully returns user instance.
+        """
+        
         result = self.authenticator.authenticate(
             username=u'thruflo', 
             password=u'secret'
@@ -117,7 +120,10 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(result.username == self.user.username)
         
     
-    def test_unsuccessful_username_password_authenticate(self):
+    def test_failure(self):
+        """ Failing to authenticate returns None.
+        """
+        
         result = self.authenticator.authenticate(
             username=u'thruflo', 
             password=u'wrong'
@@ -132,6 +138,3 @@ class TestIntegration(unittest.TestCase):
     
     
 
-
-if __name__ == '__main__':
-    unittest.main()
